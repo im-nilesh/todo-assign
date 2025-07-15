@@ -5,7 +5,7 @@ import io from "socket.io-client";
 import Column from "./Column";
 import ActivityLog from "../LogPanel/ActivityLog";
 
-const socket = io(import.meta.env.VITE_API_URL);
+const socket = io(process.env.REACT_APP_API_URL);
 
 const KanbanBoard = () => {
   const { user } = useAuth();
