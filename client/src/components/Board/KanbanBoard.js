@@ -5,7 +5,7 @@ import ActivityLog from "../LogPanel/ActivityLog";
 import { useAuth } from "../../context/AuthContext";
 import axios from "axios";
 
-const socket = io(import.meta.env.VITE_BACKEND_URL);
+const socket = io(import.meta.env.VITE_API_URL);
 
 const KanbanBoard = () => {
   const [tasks, setTasks] = useState([]);
