@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext();
 
@@ -7,9 +7,9 @@ export const AuthProvider = ({ children }) => {
     JSON.parse(localStorage.getItem("user"))
   );
 
-  const login = (userData) => {
-    localStorage.setItem("user", JSON.stringify(userData));
-    setUser(userData);
+  const login = (data) => {
+    localStorage.setItem("user", JSON.stringify(data));
+    setUser(data);
   };
 
   const logout = () => {
