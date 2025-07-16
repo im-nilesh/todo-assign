@@ -446,3 +446,17 @@ body {
 .task-card .delete-btn:hover {
   background: #d32f2f;
 }
+.task-create-form select {
+  padding: 12px;
+  border: 1px solid #cfd8dc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #f9fcff;
+  transition: border 0.2s, background 0.2s;
+}
+
+.task-create-form select:focus {
+  border-color: #007bff;
+  background: #e3f0ff;
+  outline: none;
+}

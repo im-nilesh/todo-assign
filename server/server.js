@@ -7,6 +7,7 @@ import { Server } from "socket.io";
 import authRoutes from "./routes/authRoutes.js";
 import taskRoutes from "./routes/taskRoutes.js";
 import setupSocket from "./socket.js";
+import userRoutes from "./routes/userRoutes.js";
 
 dotenv.config();
 const app = express();
@@ -23,6 +24,8 @@ mongoose
 
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
+app.use("/api/users", userRoutes);
+console.log("✅ /api/users route mounted");
 
 setupSocket(io);
 

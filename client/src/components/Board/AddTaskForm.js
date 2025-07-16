@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import API from "../../utils/api"; // Adjust path if needed
 
 const AddTaskForm = ({ onAdd }) => {
   const [form, setForm] = useState({
@@ -9,6 +10,22 @@ const AddTaskForm = ({ onAdd }) => {
     status: "Todo",
   });
 
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    // Fetch all users from the backend
+    const fetchUsers = async () => {
+      try {
+        const res = await API.get("/api/users");
+        setUsers(res.data);
+      } catch (err) {
+        console.error("Failed to fetch users:", err);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -16,7 +33,7 @@ const AddTaskForm = ({ onAdd }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.title.trim()) return;
-    onAdd({ ...form, updatedAt: new Date() }); // ✅ add updatedAt
+    onAdd({ ...form, updatedAt: new Date() });
     setForm({
       title: "",
       description: "",
@@ -50,12 +67,17 @@ const AddTaskForm = ({ onAdd }) => {
         value={form.priority}
         onChange={handleChange}
       />
-      <input
-        name="assignedTo"
-        placeholder="Assign to (optional)"
-        value={form.assignedTo}
-        onChange={handleChange}
-      />
+
+      {/* Dropdown of users from database */}
+      <select name="assignedTo" value={form.assignedTo} onChange={handleChange}>
+        <option value="">Assign to (optional)</option>
+        {users.map((user) => (
+          <option key={user._id} value={user.name}>
+            {user.name}
+          </option>
+        ))}
+      </select>
+
       <button type="submit">Add Task</button>
     </form>
   );
