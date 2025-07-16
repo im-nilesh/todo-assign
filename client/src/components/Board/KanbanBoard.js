@@ -19,7 +19,7 @@ const KanbanBoard = () => {
     API.get("/api/tasks/logs").then((res) => setLogs(res.data));
 
     socket.on("tasks", (data) => {
-      setTasks(data); // ✅ sync updated task list
+      setTasks(data);
     });
 
     socket.on("log", (log) => {
@@ -44,8 +44,15 @@ const KanbanBoard = () => {
     socket.emit("create-task", {
       ...task,
       user: user.name,
-      status: "Todo", // ✅ enforce default
+      status: "Todo",
       updatedAt: new Date(),
+    });
+  };
+
+  const deleteTask = (task) => {
+    socket.emit("delete-task", {
+      id: task._id,
+      user: user.name,
     });
   };
 
@@ -97,6 +104,7 @@ const KanbanBoard = () => {
           status={status}
           tasks={tasks.filter((t) => t.status === status)}
           onUpdate={updateTask}
+          onDelete={deleteTask} // 👈 pass delete handler
           smartAssign={smartAssign}
         />
       ))}
