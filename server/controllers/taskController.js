@@ -16,8 +16,21 @@ export const createTask = async (req, res) => {
 
 export const updateTask = async (req, res) => {
   const { id } = req.params;
-  const task = await Task.findByIdAndUpdate(id, req.body, { new: true });
-  res.json(task);
+  const { updatedAt, ...updates } = req.body;
+  const task = await Task.findById(id);
+  if (new Date(updatedAt) < task.updatedAt) {
+    return res
+      .status(409)
+      .json({ error: "Conflict detected. Task was updated by another user." });
+  }
+  updates.updatedAt = new Date();
+  const updatedTask = await Task.findByIdAndUpdate(id, updates, { new: true });
+  logAction(
+    "update",
+    req.user?.name || "Someone",
+    `Updated task "${updatedTask.title}"`
+  );
+  res.json(updatedTask);
 };
 
 export const deleteTask = async (req, res) => {
