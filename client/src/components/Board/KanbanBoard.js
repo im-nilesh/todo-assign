@@ -4,6 +4,7 @@ import API from "../../utils/api";
 import io from "socket.io-client";
 import Column from "./Column";
 import ActivityLog from "../LogPanel/ActivityLog";
+import AddTaskForm from "./AddTaskForm";
 
 const socket = io(process.env.REACT_APP_API_URL);
 
@@ -11,6 +12,7 @@ const KanbanBoard = () => {
   const { user } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [logs, setLogs] = useState([]);
+  const [showAdd, setShowAdd] = useState(false);
 
   useEffect(() => {
     API.get("/api/tasks").then((res) => setTasks(res.data));
@@ -28,6 +30,10 @@ const KanbanBoard = () => {
     socket.emit("update-task", { ...updatedTask, user: user.name });
   };
 
+  const handleAddTask = (task) => {
+    socket.emit("create-task", { ...task, user: user.name });
+  };
+
   const smartAssign = () => {
     const userCounts = {};
     tasks.forEach((t) => {
@@ -43,6 +49,35 @@ const KanbanBoard = () => {
 
   return (
     <div className="board-container">
+      {/* Floating + Button */}
+      <button
+        className="add-task-fab"
+        onClick={() => setShowAdd(true)}
+        title="Add Task"
+      >
+        +
+      </button>
+
+      {/* Modal for AddTaskForm */}
+      {showAdd && (
+        <div className="modal-overlay" onClick={() => setShowAdd(false)}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <AddTaskForm
+              onAdd={(task) => {
+                handleAddTask(task);
+                setShowAdd(false);
+              }}
+            />
+            <button
+              className="close-modal-btn"
+              onClick={() => setShowAdd(false)}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
       {["Todo", "In Progress", "Done"].map((status) => (
         <Column
           key={status}

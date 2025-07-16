@@ -7,21 +7,53 @@ const setupSocket = (io) => {
   io.on("connection", (socket) => {
     console.log("🧠 Socket connected:", socket.id);
 
-    // Update Task
+    // Update Task with conflict handling
     socket.on("update-task", async (updatedTask) => {
-      const task = await Task.findByIdAndUpdate(updatedTask._id, updatedTask, {
-        new: true,
-      });
-      const logEntry = {
-        user: updatedTask.user || "Someone",
-        title: task.title,
-        action: "updated",
-        timestamp: new Date(),
-      };
-      actionLog.unshift(logEntry);
-      if (actionLog.length > 20) actionLog.pop();
-      io.emit("tasks", await Task.find());
-      io.emit("log", logEntry);
+      try {
+        const current = await Task.findById(updatedTask._id);
+
+        if (!current) return;
+
+        // Check for conflict
+        const clientTime = new Date(updatedTask.updatedAt).getTime();
+        const serverTime = new Date(current.updatedAt).getTime();
+
+        if (clientTime < serverTime) {
+          // Conflict detected
+          socket.emit("conflict", {
+            conflict: true,
+            message: "Task was modified by another user.",
+            serverTask: current,
+            clientTask: updatedTask,
+          });
+          return;
+        }
+
+        // No conflict – proceed with update
+        updatedTask.updatedAt = new Date();
+        const task = await Task.findByIdAndUpdate(
+          updatedTask._id,
+          updatedTask,
+          {
+            new: true,
+          }
+        );
+
+        const logEntry = {
+          user: updatedTask.user || "Someone",
+          title: task.title,
+          action: "updated",
+          timestamp: new Date(),
+        };
+
+        actionLog.unshift(logEntry);
+        if (actionLog.length > 20) actionLog.pop();
+
+        io.emit("tasks", await Task.find());
+        io.emit("log", logEntry);
+      } catch (err) {
+        console.error("Update Task Error:", err.message);
+      }
     });
 
     // Create Task
