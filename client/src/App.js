@@ -20,10 +20,11 @@ const App = () => (
   <AuthProvider>
     <Router>
       <Routes>
-        <Route path="/login" element={<Login />} />
+        <Route path="/" element={<Navigate to="/register" />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
         <Route
-          path="/"
+          path="/kanban"
           element={
             <ProtectedRoute>
               <KanbanBoard />

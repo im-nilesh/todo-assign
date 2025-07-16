@@ -6,6 +6,7 @@ import { useAuth } from "../../context/AuthContext";
 const Register = () => {
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const navigate = useNavigate();
   const { login } = useAuth();
 
@@ -16,14 +17,11 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setSuccess("");
     try {
       await API.post("/api/auth/register", form);
-      const res = await API.post("/api/auth/login", {
-        email: form.email,
-        password: form.password,
-      });
-      login({ ...res.data.user, token: res.data.token });
-      navigate("/");
+      setSuccess("Registration successful! Please login.");
+      setForm({ name: "", email: "", password: "" });
     } catch (err) {
       setError(err.response?.data?.error || "Registration failed.");
     }
@@ -33,6 +31,7 @@ const Register = () => {
     <form className="auth-form" onSubmit={handleSubmit}>
       <h2>Register</h2>
       {error && <p style={{ color: "red" }}>{error}</p>}
+      {success && <p style={{ color: "green" }}>{success}</p>}
       <input
         type="text"
         name="name"
@@ -58,6 +57,9 @@ const Register = () => {
         required
       />
       <button type="submit">Register</button>
+      <p>
+        Already have an account? <a href="/login">Login</a>
+      </p>
     </form>
   );
 };
