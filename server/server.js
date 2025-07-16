@@ -28,3 +28,15 @@ setupSocket(io);
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+global.actionLog = global.actionLog || [];
+
+function logAction(action, user, details) {
+  global.actionLog.unshift({
+    action,
+    user,
+    details,
+    timestamp: new Date().toISOString(),
+  });
+  global.actionLog = global.actionLog.slice(0, 20);
+}
