@@ -16,7 +16,7 @@ const AddTaskForm = ({ onAdd }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!form.title.trim()) return;
-    onAdd(form);
+    onAdd({ ...form, updatedAt: new Date() }); // ✅ add updatedAt
     setForm({
       title: "",
       description: "",

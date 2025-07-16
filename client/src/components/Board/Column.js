@@ -1,10 +1,20 @@
 import React from "react";
 import TaskCard from "./TaskCard";
 
-const Column = ({ status, tasks, onUpdate, smartAssign }) => {
+const Column = ({ status, tasks, allTasks = [], onUpdate, smartAssign }) => {
   const handleDrop = (e) => {
+    e.preventDefault();
     const id = e.dataTransfer.getData("taskId");
-    onUpdate({ ...tasks.find((t) => t._id === id), status });
+
+    const draggedTask = allTasks.find((t) => String(t._id) === id);
+    if (!draggedTask || draggedTask.status === status) return;
+
+    onUpdate({
+      ...draggedTask,
+      status,
+      user: draggedTask.assignedTo || "Unassigned",
+      updatedAt: new Date(),
+    });
   };
 
   return (
@@ -14,6 +24,7 @@ const Column = ({ status, tasks, onUpdate, smartAssign }) => {
       onDrop={handleDrop}
     >
       <h3>{status}</h3>
+      {tasks.length === 0 && <p style={{ color: "#888" }}>No tasks</p>}
       {tasks.map((task) => (
         <TaskCard
           key={task._id}

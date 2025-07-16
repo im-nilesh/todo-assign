@@ -18,20 +18,35 @@ const KanbanBoard = () => {
     API.get("/api/tasks").then((res) => setTasks(res.data));
     API.get("/api/tasks/logs").then((res) => setLogs(res.data));
 
-    socket.on("tasks", setTasks);
+    socket.on("tasks", (data) => {
+      setTasks(data); // ✅ sync updated task list
+    });
+
     socket.on("log", (log) => {
       setLogs((prev) => [log, ...prev.slice(0, 19)]);
     });
 
-    return () => socket.disconnect();
+    return () => {
+      socket.off("tasks");
+      socket.off("log");
+    };
   }, []);
 
   const updateTask = (updatedTask) => {
-    socket.emit("update-task", { ...updatedTask, user: user.name });
+    socket.emit("update-task", {
+      ...updatedTask,
+      user: user.name,
+      updatedAt: new Date(),
+    });
   };
 
   const handleAddTask = (task) => {
-    socket.emit("create-task", { ...task, user: user.name });
+    socket.emit("create-task", {
+      ...task,
+      user: user.name,
+      status: "Todo", // ✅ enforce default
+      updatedAt: new Date(),
+    });
   };
 
   const smartAssign = () => {
@@ -49,7 +64,6 @@ const KanbanBoard = () => {
 
   return (
     <div className="board-container">
-      {/* Floating + Button */}
       <button
         className="add-task-fab"
         onClick={() => setShowAdd(true)}
@@ -58,7 +72,6 @@ const KanbanBoard = () => {
         +
       </button>
 
-      {/* Modal for AddTaskForm */}
       {showAdd && (
         <div className="modal-overlay" onClick={() => setShowAdd(false)}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>

@@ -357,3 +357,10 @@ body {
   background: linear-gradient(90deg, #0056b3 60%, #007bff 100%);
   transform: translateY(-1px) scale(1.02);
 }
+
+.task-card.dragging {
+  opacity: 0.6;
+  transform: scale(1.05);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
