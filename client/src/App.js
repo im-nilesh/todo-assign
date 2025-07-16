@@ -10,6 +10,8 @@ import Register from "./components/Auth/Register";
 import KanbanBoard from "./components/Board/KanbanBoard";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import "./styles.css";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
@@ -26,9 +28,9 @@ const App = () => (
         <Route
           path="/kanban"
           element={
-            <ProtectedRoute>
+            <DndProvider backend={HTML5Backend}>
               <KanbanBoard />
-            </ProtectedRoute>
+            </DndProvider>
           }
         />
       </Routes>

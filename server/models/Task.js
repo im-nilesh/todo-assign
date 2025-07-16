@@ -2,18 +2,30 @@ import mongoose from "mongoose";
 
 const taskSchema = new mongoose.Schema(
   {
-    title: { type: String, unique: true },
-    description: String,
-    assignedTo: String,
+    title: {
+      type: String,
+      unique: true,
+      required: true,
+    },
+    description: {
+      type: String,
+    },
+    assignedTo: {
+      type: String,
+    },
     status: {
       type: String,
       enum: ["Todo", "In Progress", "Done"],
       default: "Todo",
     },
-    priority: Number,
+    priority: {
+      type: Number,
+      default: 1,
+    },
   },
   {
-    timestamps: true, // ✅ Automatically adds createdAt and updatedAt
+    timestamps: true, // includes createdAt and updatedAt
+    versionKey: false, // optional: disable __v version key from MongoDB
   }
 );
 

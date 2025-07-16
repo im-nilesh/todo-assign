@@ -24,8 +24,10 @@ mongoose
 
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
+
+console.log("✅ Smart assign route is mounted");
+
 app.use("/api/users", userRoutes);
-console.log("✅ /api/users route mounted");
 
 setupSocket(io);
 
